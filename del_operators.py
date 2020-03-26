@@ -47,7 +47,6 @@ def __validate_grid(h, ndims):
 def __deriv(f, ax, h, out, rank=0, boundary=None):
     """
     """
-    h = __validate_grid(h, ndims)
     if boundary is None:
         boundary = DEFAULT_BOUNDARY
 
@@ -119,7 +118,7 @@ def grad(f, ndims=2, h=None, boundary=None):
     """
     
     f = np.asanyarray(f)
-
+    h = __validate_grid(h, ndims)
     # gradient will add another dimension of length ndims
     gradf = np.empty(tuple([ndims]+list(f.shape)),float)
     fshape = f.shape[:-ndims]
@@ -177,6 +176,7 @@ def div(f, ndims=2, h=None, boundary=None):
     """
     
     f = np.asanyarray(f)
+    h = __validate_grid(h, ndims)
 
     rank = f.ndim - ndims
 
@@ -249,6 +249,8 @@ def curl(f, ndims=2, h=None, boundary=None):
     """
 
     f = np.asanyarray(f)
+    h = __validate_grid(h, ndims)
+    
     rank = f.ndim - ndims
     vdims = f.shape[0]
 
