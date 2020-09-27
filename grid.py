@@ -2,6 +2,12 @@ import numpy as np
 from scipy import ndimage
 import itertools
 import warnings
+# detect if CUDA is available
+try:
+    import cupy
+    SKIP_CUDA = False
+except ImportError:
+    SKIP_CUDA = True
 
 class Grid:
 
@@ -128,12 +134,17 @@ class Grid:
         if boundary is None:
             boundary = self.boundary
         
-        # gradient will add another dimension of length ndims
-        gradf = np.empty(tuple([ndims]+list(f.shape)),float)
         fshape = f.shape[:-ndims]
         rank = len(fshape)
-        for ax in range(ndims):
-            self.__deriv(f, ax, h, gradf[ax], rank=rank,boundary=boundary)
+        
+        if ndims == 1:
+            gradf = np.empty(tuple(list(f.shape)), float)
+            self.__deriv(f, 0, h, gradf, rank=rank, boundary=boundary)
+        else:
+            # gradient will add another dimension of length ndims
+            gradf = np.empty(tuple([ndims]+list(f.shape)), float)
+            for ax in range(ndims):
+                self.__deriv(f, ax, h, gradf[ax], rank=rank, boundary=boundary)
 
         return gradf
 
